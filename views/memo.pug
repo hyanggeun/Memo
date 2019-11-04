@@ -1,0 +1,154 @@
+html
+    head
+        title=title
+        style.
+            .frame{
+                width: 60%;
+                height: 40%;
+                margin: 10 auto;
+                
+            }
+            #container{
+                overflow:hidden; /* or overflow:auto; if you want scrollbars */
+                padding: 10px;
+                border: 1px solid black;
+            }
+           #memo-left{
+               float: left;
+               width: 20%;
+           }
+           #memo-right{
+               float: left;
+               width: 80%;
+           }
+           ul{
+               padding: 0px 0px 0px 5px;
+           }
+           #memo-button{
+               float: right;
+               padding: 10px 0px 0px 0px;
+           }
+           #to-do-container{
+               overflow: hidden;
+               padding: 20px;
+           }
+           #to-do{
+               border: 1px solid red;
+               float: left;
+               text-align: center;
+               width: 33%;
+           }
+           #today-list{
+               border: 1px solid black;
+                float: left;
+                text-align: center; 
+                width: 33%;
+           }
+           #tom-list{
+               border: 1px solid orange;
+                float: left;
+                text-align: center;
+                width: 33%;
+           }
+           .to-do-list{
+               
+               padding:5px;
+           }
+
+    body
+        h1 #{title}
+        div.frame
+            div#container
+                div#memo-left
+                    ul
+                        input(type="text", placeholder="제목", id="name",style="font-size: 15px;")
+                    ul
+                        p(style="font-size: 15px;margin:0px;") 날짜를 입력하세요
+                        input(type="date", id="date")
+                    
+                div#memo-right
+                    textarea(id="content", cols="125", rows="11", placeholder="내용을 입력하세요",style="padding:5px;")
+                div#memo-button
+                    button(type="submit" id="submit-button") 등록
+            div#to-do-container
+                div#to-do To-Do-List
+                    div.to-do-list
+                div#today-list 오늘 할일
+                    div.to-do-list 잠자기
+                div#tom-list 내일 할일
+                    div.to-do-list 잠자기
+
+    script.
+        var date = document.getElementById('memo-left')
+        date.querySelector('#date').value
+        = new Date().toISOString().substring(0, 10);
+        document.getElementById('submit-button').addEventListener('click',(event)=>{
+            event.preventDefault();
+            var name = document.getElementById('name').value;
+            var content = document.getElementById('content').value;
+            var date = document.getElementById('date').value;
+            var _header = new Headers();
+            _header.append('Content-Type','application/json');
+            //- console.log(_header.get('Content-Type'))
+            //- console.log(JSON.stringify({name:name, date:date, content: content}));
+            fetch('/memo',{
+                method: 'POST',
+                headers: _header,
+                body: JSON.stringify({name: name, date:date, content: content})
+            }).then((result)=>{
+                update_todo_list();
+                //update_today_list(res);
+                //update_tom_list(res);
+            })
+            
+        })
+       window.onload = function(){
+           update_todo_list();
+           update_today_list();
+           update_tom_list();
+       }
+        var update_todo_list = function(){
+            fetch('/memo/lists')
+            .then((result)=>{
+                result.json().then((resp)=>{
+                    //console.log(resp[0])
+                    var to_do = document.getElementById('to-do');
+                    for(var i=0;i<resp.length;i++){
+                        //console.log(resp[i].name);
+                            var to_do_div = document.createElement('div');
+                            to_do_div.class = 'to-do-list';
+                            to_do_div.append(resp[i].name);
+                            to_do.append(to_do_div);
+                    }
+                })
+            })
+        }
+        var update_today_list = function(){
+            fetch('/memo/todaylist')
+            .then((result)=>{
+                result.json().then((resp)=>{
+                    var today_do = document.getElementById('today-list');
+                    for(var i=0;i<resp.length;i++){
+                        var today_div = document.createElement('div');
+                        today_div.class = 'to-do-list';
+                        today_div.append(resp[i].name);
+                        today_do.append(today_div);
+                    }
+                })
+            })
+        }
+         var update_tom_list = function(){
+            fetch('/memo/tomlist')
+            .then((result)=>{
+                result.json().then((resp)=>{
+                    var tom_do = document.getElementById('tom-list');
+                    for(var i=0;i<resp.length;i++){
+                        var tom_div = document.createElement('div');
+                        tom_div.class = 'to-do-list';
+                        tom_div.append(resp[i].name);
+                        tom_do.append(tom_div);
+                    }
+                })
+            })
+        }
+           

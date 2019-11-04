@@ -1,0 +1,59 @@
+html
+    head
+        title=title
+        style.
+            html,body{ 
+                margin:0; 
+                padding:0; 
+                height:100%;
+                width:100%; 
+                border: 1px solid red;
+                text-align: center;
+            }
+            #full-size{
+                height:100%;
+                width:100%;
+                overflow:hidden; /* or overflow:auto; if you want scrollbars */
+            }
+            #new-memo{
+                width: 50%;
+                height: 30%;
+                border: 1px solid black;
+                padding: 10px;
+                display: inline-block;
+            }
+            #memo-name{
+                text-align: left;
+                font-size: 14px;
+                padding: 0px 0px 10px 0px;
+            }
+            #memo-date{
+                text-align: left;
+            }
+            #memo-content{
+                text-align: right;
+
+            }
+            //- #memo-button{
+            //-     position:relative;
+            //-     top: 
+            //- }
+
+    body
+        h1 #{title}
+        div#full-size
+            div#new-memo 
+                div#memo-name 
+                    input(type="text", placeholder="제목", name="name", style="width:30%;height:20%;font-size:15px;")
+                div#memo-date 
+                    p(style="font-size: 15px;margin:0px;") 날짜를 입력하세요
+                    input(type="date" style="width: 30%; height:30%;")
+                div#memo-content
+                    textarea(name="content", cols="40", rows="10", placeholder="내용을 입력하세요")
+                div#memo-button
+                    button(type="submit" id="submit-button") 제출
+    script.
+        var date = document.getElementById('memo-date')
+        date.querySelector('input').value
+        = new Date().toISOString().substring(0, 10);
+    
